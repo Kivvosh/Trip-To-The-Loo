@@ -11,6 +11,31 @@ public class ObjectCarrier : MonoBehaviour
     private GameObject heldObject;
     private Rigidbody heldRb;
     private Camera playerCam;
+    [Header("UI Celownika")]
+    public UnityEngine.UI.Image crosshairImage; // Przeci¹gnij tutaj swój obrazek Crosshair
+    public Color normalColor = Color.white;
+    public Color interactColor = Color.red;
+
+
+    void UpdateCrosshair()
+    {
+        if (crosshairImage == null) return;
+
+        Ray ray = playerCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+
+        // Sprawdzamy, czy patrzymy na coœ z tagiem "Pickup" lub "Door"
+        if (Physics.Raycast(ray, out hit, pickupRange))
+        {
+            if (hit.collider.CompareTag(pickupTag) || hit.collider.CompareTag("Door"))
+            {
+                crosshairImage.color = interactColor; // Zmieñ na czerwony
+                return;
+            }
+        }
+
+        crosshairImage.color = normalColor; // Wróæ do bia³ego
+    }
 
     void Start()
     {
@@ -19,6 +44,8 @@ public class ObjectCarrier : MonoBehaviour
 
     void Update()
     {
+        UpdateCrosshair();
+
         if (Input.GetMouseButtonDown(1)) // PPM
         {
             if (heldObject == null)
